@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.bootstrap.container import Container
 from app.presentation.api.v1.endpoints.base_router import api_router
-from app.config.settings import Settings
 
 
 def init_container() -> Container:
@@ -28,9 +27,12 @@ async def lifespan(app: FastAPI):
     container = init_container()
     app.state.container = container
 
-    # Set app name
+    # Get settings.
     settings = container.settings()
+
+    # Set app.
     app.title = settings.APP_NAME
+    app.openapi_version
 
     # Check connection.
     if not await container.session_manager().connect():

@@ -29,5 +29,9 @@ async def refresh():
 
 
 @router.get("/me")
-def me(current_user: UserResponse = Depends(get_current_user)):
+async def me(current_user: UserResponse = Depends(get_current_user)):
     return current_user
+
+@router.post("/logout")
+async def logout():
+    pass
