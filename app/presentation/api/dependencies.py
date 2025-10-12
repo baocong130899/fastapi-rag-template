@@ -21,7 +21,6 @@ async def get_current_user(
     try:
         user = await auth_svc.verify_access(access_token=access_token)
     except Exception as e:
-        print(e)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or revoked token!.",

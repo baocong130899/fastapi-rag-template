@@ -8,6 +8,18 @@ from app.presentation.schemas.user_schemas import UserCreate, UserResponse
 router = APIRouter()
 
 
+@router.get("/{id}")
+# @inject
+async def all():
+    pass
+
+
+@router.get("/{id}")
+# @inject
+async def get_by_id():
+    pass
+
+
 @router.post("/")
 @inject
 async def create(
@@ -28,3 +40,15 @@ async def create(
         created_at=user.created_at,
         updated_at=user.updated_at,
     )
+
+
+@router.put("/{id}")
+# @inject
+async def update():
+    pass
+
+
+@router.delete("/{id}")
+# @inject
+async def delete():
+    pass
