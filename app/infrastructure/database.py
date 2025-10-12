@@ -31,8 +31,8 @@ class SessionManager:
             max_overflow=self.settings.MAX_OVERFLOW,
             pool_pre_ping=True,
             pool_recycle=self.settings.POOL_RECYCLE,
-            echo=self.settings.DEBUG,
-            echo_pool="debug",
+            echo=self.settings.DATABASE_DEBUG,
+            # echo_pool="debug",
         )
 
         self._sessionmaker = async_sessionmaker(
