@@ -9,7 +9,7 @@ class AuthLogin(BaseModel):
     @classmethod
     def as_form(
         cls,
-        username: str = Form(...),
+        username: EmailStr = Form(...),
         password: str = Form(...),
     ):
         return cls(username=username, password=password)

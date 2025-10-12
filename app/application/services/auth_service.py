@@ -28,7 +28,7 @@ class AuthService:
         is_valid = self.hasher_svc.verify_password(
             plain=password, hashed=user.hashed_password
         )
-        if is_valid is None:
+        if is_valid is not True:
             raise Exception("Invalid credentials!.")
 
         access_token = self.jwt_svc.create_access_token(subject=user.id)

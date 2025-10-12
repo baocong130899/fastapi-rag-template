@@ -1,5 +1,6 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from pydantic import Field, SecretStr
+from pydantic import SecretStr
+from app.infrastructure.enums.environment_enum import EnvironmentType
 
 
 class Settings(BaseSettings):
@@ -8,8 +9,17 @@ class Settings(BaseSettings):
     )
 
     APP_NAME: str
+    ENVIRONMENT: EnvironmentType = EnvironmentType.DEVELOPMENT.value  #
+    VERSION: str = "0.1.0"
 
-    DEBUG: bool = False
+    LOG_LEVEL: str = "INFO"
+    LOG_JSON_FORMAT: bool = False
+    LOG_MESSAGE_FILE: str = "logs/app.log"
+    LOG_ERROR_FILE: str = "logs/error.log"
+    LOG_BACKTRACE: bool = True
+    LOG_DIAGNOSE: bool = False
+
+    DATABASE_DEBUG: bool = False
     DATABASE_URL: SecretStr
     POOL_SIZE: int = 10
     MAX_OVERFLOW: int = 5
