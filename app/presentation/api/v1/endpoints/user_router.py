@@ -7,15 +7,18 @@ from app.presentation.schemas.user_schemas import UserCreate, UserResponse
 
 router = APIRouter()
 
+
 @router.get("/{id}")
-@inject
+# @inject
 async def all():
     pass
 
+
 @router.get("/{id}")
-@inject
+# @inject
 async def get_by_id():
     pass
+
 
 @router.post("/")
 @inject
@@ -38,13 +41,14 @@ async def create(
         updated_at=user.updated_at,
     )
 
+
 @router.put("/{id}")
-@inject
+# @inject
 async def update():
     pass
 
+
 @router.delete("/{id}")
-@inject
+# @inject
 async def delete():
     pass
-
