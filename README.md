@@ -1,7 +1,7 @@
 # 🚀 FastAPI-RAG-Template – Retrieval-Augmented Generation with LangChain & PGVector
 
 <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-  <a href="https://github.com/baocong130899/rag/stargazers" target="_blank" rel="noopener noreferrer">
+  <a href="https://github.com/baocong130899/fastapi-rag-template/stargazers" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/github/stars/baocong130899/fastapi-rag-template" alt="GitHub stars">
   </a>
 
@@ -19,6 +19,10 @@
 
   <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer">
     <img src="https://img.shields.io/badge/FastAPI-Framework-brightgreen" alt="FastAPI">
+  </a>
+
+  <a href="https://alembic.sqlalchemy.org/en/latest/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/Alembic-Framework-orange" alt="Alembic">
   </a>
 
   <a href="https://docs.langchain.com/" target="_blank" rel="noopener noreferrer">
@@ -79,6 +83,7 @@ Use case examples: chatbots, Q&A systems over custom documents, knowledge-base a
 |------------------|-----------------------------------|
 | Backend API      | FastAPI                           |
 | LLM Framework    | LangChain                          |
+| Migration        | Alembic                           |
 | Vector Database  | PGVector / PostgreSQL              |
 | Containerization | Docker + Docker Compose            |
 | Reverse Proxy    | Nginx                              |
@@ -123,62 +128,86 @@ Access the following URLs after service startup:
 ---
 
 ## 📁 Project Structure
-### Structure
+### 📁 Structure
 ```
 fastapi-rag-template/
-├── app/                    # mã nguồn chính
-│   ├── main.py             # entry point, khởi tạo FastAPI app, load config, include routers
-│   ├── config/             # cấu hình tổng (settings, env, logger, etc.)
-│   │   ├── settings.py
+├── app/                                 # Main application source code
+│   ├── application/                     # Application layer: use cases & orchestration logic
+│   │   ├── services/                    # Application Services / UseCases
+│   │   │   ├── __init__.py
+│   │   │   ├── auth_service.py
+│   │   │   ├── user_service.py
 │   │   └── __init__.py
-│   ├── presentation/       # layer tương tác bên ngoài: API endpoints, HTTP layer
-│   │   ├── api/             # các router / controller
-│   │   │   ├── v1/           # nếu versioning API
-│   │   │   │   ├── endpoints/  # các route files
-│   │   │   │   └── dependencies/
-│   │   │   └── __init__.py
-│   │   ├── schemas/         # Pydantic models request/response
-│   │   └── __init__.py
-│   ├── application/         # layer ứng dụng / use cases / services
-│   │   ├── services/         # các UseCase / Application Service
-│   │   ├── dtos/             # optional: các DTO nếu cần chuyển giữa layers
-│   │   └── __init__.py
-│   ├── domain/              # domain core: nghiệp vụ
-│   │   ├── entities/         # các Entity
-│   │   ├── value_objects/
-│   │   ├── aggregates/       # nếu mô hình hóa aggregates
-│   │   ├── repositories/     # định nghĩa interface (abstract) của repository
-│   │   ├── domain_services/  # nghiệp vụ không rõ nên thuộc entity nào
-│   │   ├── events/           # domain events
-│   │   └── __init__.py
-│   ├── infrastructure/      # lớp bên ngoài hỗ trợ kỹ thuật
-│   │   ├── database/         # kết nối DB, ORM, migrations
-│   │   ├── repository_impl/  # implement các interface repository của domain
-│   │   ├── external/         # gọi service ngoài, api bên ngoài
-│   │   └── __init__.py
-│   └── utils/                # helper chung, thư viện tiện ích
-│   └── rag/
+│   │
+│   ├── bootstrap/                       # Application bootstrap / dependency container
+│   │   ├── container.py
 │   │   ├── __init__.py
-│   │   ├── pipelines/
-│   │   │   ├── __init__.py
-│   │   │   ├── embedding_pipeline.py     # Embedding + store
-│   │   │   ├── retrieval_pipeline.py     # Vector search logic
-│   │   │   └── generation_pipeline.py    # LLM response + synthesis
-│   │   │
-│   │   ├── services/
-│   │   │   ├── __init__.py
-│   │   │   └── rag_service.py            # Orchestrator RAGService
-│   │   │
-│   │   ├── adapters/
-│   │   │   ├── __init__.py
-│   │   │   ├── langchain_adapter.py      # Nếu dùng LangChain
-│   │   │   ├── openai_adapter.py         # Gọi model từ OpenAI API
-│   │   │   └── vectorstore_adapter.py    # pgvector / chroma / FAISS
-│   │   │
-│   │   └── schemas/
-│   │       ├── __init__.py
-│   │       └── rag_schema.py             # Request/Response cho API
-└── tests/                   # unit/integration tests
+│   │
+│   ├── config/                          # Global configuration (env vars, settings, logging, etc.)
+│   │   ├── settings.py
+│   │   ├── logging_config.py
+│   │   └── __init__.py
+│   │
+│   ├── domain/                          # Domain core: business logic & rules
+│   │   ├── entities/                    # Domain Entities
+│   │   ├── value_objects/               # Domain Value Objects
+│   │   ├── aggregates/                  # Aggregate Roots (optional)
+│   │   ├── repositories/                # Abstract repository interfaces
+│   │   ├── events/                      # Domain events (if using event-driven patterns)
+│   │   └── __init__.py
+│   │
+│   ├── infrastructure/                  # Technical infrastructure layer
+│   │   ├── enums/                       # Enum definitions (status, roles, etc.)
+│   │   ├── models/                      # ORM models (SQLAlchemy)
+│   │   ├── repository_impl/             # Repository implementations for domain interfaces
+│   │   ├── external/                    # External service or API integrations
+│   │   ├── database.py                  # Database connection, ORM setup, Alembic migrations
+│   │   └── __init__.py
+│   │
+│   ├── presentation/                    # Presentation layer (API / HTTP interfaces)
+│   │   ├── api/                         # Routers & Controllers
+│   │   │   ├── v1/                      # API versioning (v1, v2, etc.)
+│   │   │   │   ├── endpoints/           # Route handler files
+│   │   │   │   └── dependencies.py      # Dependency injection for routers
+│   │   │   └── __init__.py
+│   │   ├── schemas/                     # Pydantic schemas (Request/Response models)
+│   │   └── __init__.py
+│   │
+│   ├── utils/                           # Utility helpers & common functions
+│   │   └── __init__.py
+│   │
+│   └── rag/                             # RAG (Retrieval-Augmented Generation) module
+│       ├── __init__.py
+│       ├── adapters/                    # Integration adapters for external LLM/Vector APIs
+│       │   ├── __init__.py
+│       │   ├── langchain_adapter.py
+│       │   ├── openai_adapter.py
+│       │   └── vectorstore_adapter.py   # PGVector / Chroma / FAISS implementation
+│       │
+│       ├── pipelines/                   # RAG pipelines (embedding, retrieval, generation)
+│       │   ├── __init__.py
+│       │   ├── embedding_pipeline.py    # Embedding + storing documents
+│       │   ├── retrieval_pipeline.py    # Vector similarity search logic
+│       │   └── generation_pipeline.py   # LLM response generation & synthesis
+│       │
+│       ├── services/                    # Service orchestrators for RAG flow
+│       │   ├── __init__.py
+│       │   └── rag_service.py           # Main RAG Orchestrator Service
+│       │
+│       └── schemas/                     # Request/Response schemas for RAG API
+│           ├── __init__.py
+│           └── rag_schema.py
+│
+│   ├── main.py                          # Entry point: initializes FastAPI app, loads configs, includes routers
+│
+├── migration/                           # Alembic database migrations
+│   ├── versions/
+│   │   ├── <timestamp>_init_db.py       # Initial migration script
+│   ├── env.py                           # Alembic environment setup
+│   ├── script.py.mako                   # Migration script template
+│   └── README                           # Notes about migrations
+│
+└── tests/                               # Unit & integration tests
     ├── domain/
     ├── application/
     └── presentation/
@@ -236,7 +265,7 @@ We welcome contributions! Please review the following steps:
 4. Push to your fork and open a Pull Request
 5. Ensure all CI checks pass and include documentation / test where needed
 
-Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
+Read [CLICENSE](CLICENSE) for more details.
 
 ---
 
@@ -259,7 +288,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ## 📄 License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
