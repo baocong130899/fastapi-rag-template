@@ -1,134 +1,231 @@
-# 🚀 RAG Template – FastAPI + LangChain + PGVector
+# 🚀 FastAPI-RAG-Template – Retrieval-Augmented Generation with LangChain & PGVector
 
-A **production-ready Retrieval-Augmented Generation (RAG)** template built with **FastAPI**, **LangChain**, and **PostgreSQL + PGVector**.  
-This project provides a clean architecture for building LLM-powered applications with scalable vector search, modular pipelines, and easy deployment via Docker and Nginx.
+[![GitHub stars](https://img.shields.io/github/stars/baocong130899/rag)](https://github.com/baocong130899/rag/stargazers)  
+[![GitHub issues](https://img.shields.io/github/issues/baocong130899/rag)](https://github.com/baocong130899/rag/issues)  
+[![GitHub license](https://img.shields.io/github/license/baocong130899/rag)](LICENSE)  
+[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)  
+[![FastAPI](https://img.shields.io/badge/FastAPI-Framework-brightgreen)](https://fastapi.tiangolo.com/)  
+[![LangChain](https://img.shields.io/badge/LangChain-Enabled-orange)](https://docs.langchain.com/)
 
----
-
-## 🌟 Features
-
-- 🔍 **RAG Architecture** – Combines vector retrieval + LLM generation  
-- 🧩 **Modular Pipelines** – Embedding, retrieval, and generation separated cleanly  
-- 🗃️ **PGVector Integration** – Store and search embeddings in PostgreSQL  
-- ⚡ **FastAPI Backend** – High-performance async API for LLM apps  
-- 🛠️ **Dockerized Deployment** – Ready-to-run with Nginx reverse proxy  
-- 🧱 **Domain-Driven Design (DDD)** – Maintainable, scalable codebase  
-- 📊 **Observability Ready** – Easily integrate with Langfuse / LangWatch / Prometheus  
+> **A production-ready template for building Retrieval-Augmented Generation (RAG) systems** with **FastAPI**, **LangChain**, and **PostgreSQL + PGVector**.  
+> Build scalable LLM-powered applications with vector search, modular pipelines and ready-to-deploy infrastructure.
 
 ---
 
-## 🧰 Tech Stack
-
-| Layer | Technology |
-|--------|-------------|
-| Backend API | [FastAPI](https://fastapi.tiangolo.com/) |
-| LLM Framework | [LangChain](https://www.langchain.com/) |
-| Vector DB | [PGVector](https://github.com/pgvector/pgvector) |
-| Containerization | Docker + Docker Compose |
-| Reverse Proxy | Nginx |
-| Scheduler | APScheduler (async) |
-| Monitoring | Optional: Langfuse, LangWatch |
+## 📌 Table of Contents  
+- [🚀 Project Overview](#🚀-project-overview)  
+- [🌟 Features](#🌟-features)  
+- [🏗️ Tech Stack](#🏗️-tech-stack)  
+- [🧭 Demo](#🧭-demo)  
+- [⚙️ Installation & Setup](#⚙️-installation--setup)  
+- [📁 Project Structure](#📁-project-structure)  
+- [📡 API Endpoints](#📡-api-endpoints)   
+- [🧩 Integration](#🧩-integration)  
+- [📈 Roadmap](#📈-roadmap)  
+- [🛠️ Contributing](#🛠️-contributing)  
+- [🐞 Known Issues](#🐞-known-issues)  
+- [🏷️ Topics](#🏷️-topics)  
+- [📄 License](#🪪-license)  
+- [💫 Author](#💫-author)  
+- [📝 Last Updated](#📝-last-updated)  
 
 ---
 
-## ⚙️ Installation
+## 🚀 Project Overview  
+This template solves the common challenge of building **RAG-powered backends** by providing a **clean architecture** that combines vector retrieval and LLM generation. With this template, you get:  
+- Embedding documents into PGVector  
+- Searching vectors to get relevant context  
+- Generating responses via LangChain + LLM  
+- Serving everything via FastAPI asynchronously  
+- Dockerized services + Nginx reverse proxy for production readiness
 
+Use case examples: chatbots, Q&A systems over custom documents, knowledge-base assistants, internal tools.
+
+---
+
+## 🌟 Features  
+- 🔍 **Retrieval-Augmented Generation (RAG)** architecture  
+- 🧩 Modular pipelines: embedding → retrieval → generation  
+- 🗃️ **PGVector + PostgreSQL** for vector storage & search  
+- ⚡ **FastAPI** async backend for high performance  
+- 🐳 **Dockerized**: ready for local & production deployment  
+- 🧱 Domain-Driven Design (DDD) for maintainability  
+- 📊 Optional integration: Langfuse / LangWatch / Prometheus  
+- 🌐 Nginx reverse proxy setup included (CORS, HTTPS-ready)  
+
+---
+
+## 🏗️ Tech Stack  
+| Layer            | Technology                         |
+|------------------|-----------------------------------|
+| Backend API      | FastAPI                           |
+| LLM Framework    | LangChain                          |
+| Vector Database  | PGVector / PostgreSQL              |
+| Containerization | Docker + Docker Compose            |
+| Reverse Proxy    | Nginx                              |
+| Scheduler        | APScheduler (async)                |
+| Monitoring       | Langfuse / LangWatch / Prometheus  |
+
+---
+
+## 🧭 Demo  
+> _Insert a GIF or screenshot of the API in use_  
+![Demo](./assets/demo.gif)
+
+---
+
+## ⚙️ Installation & Setup
 ### 1️⃣ Clone the repository
+
 ```bash
-git clone https://github.com/baocong130899/rag.git
-cd rag
-git checkout develop
+git clone https://github.com/baocong130899/fastapi-rag-template.git
+
+cd fastapi-rag-template  
 ```
 
 ### 2️⃣ Setup environment
-Create `.env` file:
+You can check the details in the configuration table below.
+
 ```bash
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=postgres
-POSTGRES_DB=ragdb
-OPENAI_API_KEY=your_openai_api_key
-JWT_SECRET=your_secret
+cp .env.example .env 
 ```
 
-### 3️⃣ Run with Docker
+### 3️⃣ Build & run with Docker
+
 ```bash
-docker-compose up -d --build
+docker-compose up -d --build  
 ```
 
-API available at → [http://localhost:8000](http://localhost:8000)
+### 4️⃣ Verification
+Access the following URLs after service startup:
+
+📚 API Documentation: [http://127.0.0.1/redoc](http://127.0.0.1/redoc)
 
 ---
 
-## 🧠 Project Structure
+## 📁 Project Structure
+### Structure
+```
+fastapi-rag-template/
+├── app/                    # mã nguồn chính
+│   ├── main.py             # entry point, khởi tạo FastAPI app, load config, include routers
+│   ├── config/             # cấu hình tổng (settings, env, logger, etc.)
+│   │   ├── settings.py
+│   │   └── __init__.py
+│   ├── presentation/       # layer tương tác bên ngoài: API endpoints, HTTP layer
+│   │   ├── api/             # các router / controller
+│   │   │   ├── v1/           # nếu versioning API
+│   │   │   │   ├── endpoints/  # các route files
+│   │   │   │   └── dependencies/
+│   │   │   └── __init__.py
+│   │   ├── schemas/         # Pydantic models request/response
+│   │   └── __init__.py
+│   ├── application/         # layer ứng dụng / use cases / services
+│   │   ├── services/         # các UseCase / Application Service
+│   │   ├── dtos/             # optional: các DTO nếu cần chuyển giữa layers
+│   │   └── __init__.py
+│   ├── domain/              # domain core: nghiệp vụ
+│   │   ├── entities/         # các Entity
+│   │   ├── value_objects/
+│   │   ├── aggregates/       # nếu mô hình hóa aggregates
+│   │   ├── repositories/     # định nghĩa interface (abstract) của repository
+│   │   ├── domain_services/  # nghiệp vụ không rõ nên thuộc entity nào
+│   │   ├── events/           # domain events
+│   │   └── __init__.py
+│   ├── infrastructure/      # lớp bên ngoài hỗ trợ kỹ thuật
+│   │   ├── database/         # kết nối DB, ORM, migrations
+│   │   ├── repository_impl/  # implement các interface repository của domain
+│   │   ├── external/         # gọi service ngoài, api bên ngoài
+│   │   └── __init__.py
+│   └── utils/                # helper chung, thư viện tiện ích
+│   └── rag/
+│   │   ├── __init__.py
+│   │   ├── pipelines/
+│   │   │   ├── __init__.py
+│   │   │   ├── embedding_pipeline.py     # Embedding + store
+│   │   │   ├── retrieval_pipeline.py     # Vector search logic
+│   │   │   └── generation_pipeline.py    # LLM response + synthesis
+│   │   │
+│   │   ├── services/
+│   │   │   ├── __init__.py
+│   │   │   └── rag_service.py            # Orchestrator RAGService
+│   │   │
+│   │   ├── adapters/
+│   │   │   ├── __init__.py
+│   │   │   ├── langchain_adapter.py      # Nếu dùng LangChain
+│   │   │   ├── openai_adapter.py         # Gọi model từ OpenAI API
+│   │   │   └── vectorstore_adapter.py    # pgvector / chroma / FAISS
+│   │   │
+│   │   └── schemas/
+│   │       ├── __init__.py
+│   │       └── rag_schema.py             # Request/Response cho API
+└── tests/                   # unit/integration tests
+    ├── domain/
+    ├── application/
+    └── presentation/
+```
+### 🔁 Flow
+Request:
 
 ```
-rag/
-├── pipelines/
-│   ├── embedding_pipeline.py
-│   ├── retrieval_pipeline.py
-│   └── generation_pipeline.py
-│
-├── services/
-│   ├── vector_service.py
-│   ├── document_service.py
-│   └── llm_service.py
-│
-├── api/
-│   ├── routers/
-│   └── main.py
-│
-└── config/
-    ├── settings.py
-    ├── logger.py
-    └── db.py
+Request 
+    → Presentation (API)
+    → Application (Use Case)
+    → Domain (Business Logic)
+    → Infrastructure (Persistence / External)
 ```
+
+Response:
+```
+Infrastructure → Domain → Application → Presentation → Response
+```
+
+## 📡 API Endpoints
+
+| Endpoint         | Method | Description                           |
+| ---------------- | ------ | ------------------------------------- |
+| `/api/v1/embed`  | POST   | Upload and embed documents            |
+| `/api/v1/query`  | POST   | Query retrieval + generation workflow |
+| `/api/v1/health` | GET    | Health check endpoint                 |
 
 ---
 
-## 📡 API Endpoints (Examples)
+## 🧩 Integration
 
-| Endpoint | Method | Description |
-|-----------|--------|-------------|
-| `/api/v1/embed` | POST | Store document embeddings |
-| `/api/v1/query` | POST | Retrieve and generate answer |
-| `/api/v1/health` | GET | Health check endpoint |
+You can optionally integrate observability tools like Langfuse.
+Wrap your pipelines to track LLM latency, cost, and usage easily.
 
 ---
 
-## 🌍 Deployment
+## 📈 Roadmap
 
-### 🐳 Docker Compose
-This template includes:
-- **FastAPI service**
-- **PostgreSQL + PGVector**
-- **Nginx reverse proxy** (CORS, HTTPS-ready)
-
-### 🔁 Reverse Proxy Example
-```nginx
-add_header 'Access-Control-Allow-Origin' '*' always;
-add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
-add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
-```
+* [ ] Add Hybrid Search (BM25 + Vector)
+* [ ] Add Authentication (JWT + OAuth)
+* [ ] Integrate Langfuse tracing
+* [ ] Build nextjs frontend demo
+* [ ] Increase test coverage
 
 ---
 
-## 🧩 Integration with Langfuse / LangWatch
+## 🛠️ Contributing
 
-You can integrate monitoring easily:
-```bash
-pip install langfuse
-```
-Then wrap pipelines to track LLM calls, latency, and cost.
+We welcome contributions! Please review the following steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/YourFeature`)
+3. Commit your changes with clear messages
+4. Push to your fork and open a Pull Request
+5. Ensure all CI checks pass and include documentation / test where needed
+
+Read [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
 
 ---
 
-## 📈 Future Roadmap
+## 🐞 Known Issues
 
-- [ ] Add Hybrid Search (BM25 + Vector)
-- [ ] Add Authentication (JWT-based)
-- [ ] Integrate OpenTelemetry tracing
-- [ ] Add Streamlit frontend demo
-- [ ] Add test coverage
+* 🤖 LLM prompt drift may occur with large contexts — consider context chunking
+* ⚠️ PGVector search latency increases for very large datasets (~100M vectors)
+* 🚧 Deployment scripts assume Linux environment — Mac/Windows users may need adjustments
 
 ---
 
@@ -136,12 +233,12 @@ Then wrap pipelines to track LLM calls, latency, and cost.
 
 `rag`, `fastapi`, `langchain`, `pgvector`, `llm`,  
 `retrieval-augmented-generation`, `vector-database`,  
-`docker`, `nginx`, `openai`, `ai-backend`, `mlops`,  
+`docker`, `nginx`, `openai`, `ai-backend`,
 `langfuse`, `langwatch`, `python`, `chatbot`, `template`
 
 ---
 
-## 🪪 License
+## 📄 License
 
 Distributed under the MIT License. See `LICENSE` for more information.
 
@@ -151,10 +248,10 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Lê Công**  
 GitHub: [@baocong130899](https://github.com/baocong130899)  
-Email: lecong.dev@gmail.com  
+Email: [lebaocongct@gmail.com](mailto:lebaocongct@gmail.com)
 
 ---
 
-## ⭐ Support
+## 📝 Last Updated
 
-If you find this project useful, please **star** 🌟 the repository and consider contributing!
+*Last updated: 2025-10-18*
