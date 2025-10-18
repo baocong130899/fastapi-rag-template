@@ -25,7 +25,7 @@ class SessionManager:
     def init_db(self) -> None:
         """Initialize the database engine and session factory."""
         self.engine = create_async_engine(
-            url=self.settings.DATABASE_URL.get_secret_value(),
+            url=self.settings.get_database_url,
             poolclass=AsyncAdaptedQueuePool,
             pool_size=self.settings.POOL_SIZE,
             max_overflow=self.settings.MAX_OVERFLOW,

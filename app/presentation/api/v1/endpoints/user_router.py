@@ -1,3 +1,4 @@
+from uuid import UUID
 from fastapi import APIRouter, Depends
 from dependency_injector.wiring import inject, Provide
 from app.bootstrap.container import Container
@@ -8,7 +9,7 @@ from app.presentation.schemas.user_schemas import UserCreate, UserResponse
 router = APIRouter()
 
 
-@router.get("/{id}")
+@router.get("")
 # @inject
 async def all():
     pass
@@ -16,7 +17,9 @@ async def all():
 
 @router.get("/{id}")
 # @inject
-async def get_by_id():
+async def get_by_id(
+    id: UUID, service: UserService = Depends(Provide[Container.user_service])
+):
     pass
 
 
@@ -44,11 +47,17 @@ async def create(
 
 @router.put("/{id}")
 # @inject
-async def update():
+async def update(
+    id: UUID, 
+    payload: str,
+    service: UserService = Depends(Provide[Container.user_service])
+):
     pass
 
 
 @router.delete("/{id}")
 # @inject
-async def delete():
+async def delete(
+    id: UUID, service: UserService = Depends(Provide[Container.user_service])
+):
     pass

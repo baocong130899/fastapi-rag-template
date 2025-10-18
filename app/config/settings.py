@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 from app.infrastructure.enums.environment_enum import EnvironmentType
@@ -20,7 +21,12 @@ class Settings(BaseSettings):
     LOG_DIAGNOSE: bool = False
 
     DATABASE_DEBUG: bool = False
-    DATABASE_URL: SecretStr
+    DATABASE_URL: Optional[str] = None
+    POSTGRES_USER: str ="postgres"
+    POSTGRES_PASSWORD: SecretStr ="postgres"
+    POSTGRES_HOST: str = "127.0.0.1"
+    POSTGRES_PORT: str = "5432"
+    POSTGRES_DB: str = "pgvector"
     POOL_SIZE: int = 10
     MAX_OVERFLOW: int = 5
     POOL_RECYCLE: int = 1800
@@ -29,3 +35,11 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_EXPIRES_IN: int = 3600  # 1h.
     JWT_REFRESH_EXPIRES_IN: int = 86400 * 7  # 7 day.
+
+    @property
+    def get_database_url(self) -> str:
+        if self.DATABASE_URL:
+            return self.DATABASE_URL
+        return (
+            f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD.get_secret_value()}@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
+        )
