@@ -177,36 +177,36 @@ fastapi-rag-template/
 │   │   └── __init__.py
 │   │
 │   └── rag/                             # RAG (Retrieval-Augmented Generation) module
-│       ├── __init__.py
-│       ├── adapters/                    # Integration adapters for external LLM/Vector APIs
-│       │   ├── __init__.py
-│       │   ├── langchain_adapter.py
-│       │   ├── openai_adapter.py
-│       │   └── vectorstore_adapter.py   # PGVector / Chroma / FAISS implementation
-│       │
-│       ├── pipelines/                   # RAG pipelines (embedding, retrieval, generation)
-│       │   ├── __init__.py
-│       │   ├── embedding_pipeline.py    # Embedding + storing documents
-│       │   ├── retrieval_pipeline.py    # Vector similarity search logic
-│       │   └── generation_pipeline.py   # LLM response generation & synthesis
-│       │
-│       ├── services/                    # Service orchestrators for RAG flow
-│       │   ├── __init__.py
-│       │   └── rag_service.py           # Main RAG Orchestrator Service
-│       │
-│       └── schemas/                     # Request/Response schemas for RAG API
-│           ├── __init__.py
-│           └── rag_schema.py
-│
+│   │   ├── __init__.py
+│   │   ├── adapters/                    # Integration adapters for external LLM/Vector APIs
+│   │   │   ├── __init__.py
+│   │   │   ├── langchain_adapter.py
+│   │   │   ├── openai_adapter.py
+│   │   │   └── vectorstore_adapter.py   # PGVector / Chroma / FAISS implementation
+│   │   │
+│   │   ├── pipelines/                   # RAG pipelines (embedding, retrieval, generation)
+│   │   │   ├── __init__.py
+│   │   │   ├── embedding_pipeline.py    # Embedding + storing documents
+│   │   │   ├── retrieval_pipeline.py    # Vector similarity search logic
+│   │   │   └── generation_pipeline.py   # LLM response generation & synthesis
+│   │   │
+│   │   ├── services/                    # Service orchestrators for RAG flow
+│   │   │   ├── __init__.py
+│   │   │   └── rag_service.py           # Main RAG Orchestrator Service
+│   │   │
+│   │   └── schemas/                     # Request/Response schemas for RAG API
+│   │       ├── __init__.py
+│   │       └── rag_schema.py
+│   │ 
 │   ├── main.py                          # Entry point: initializes FastAPI app, loads configs, includes routers
-│
+│   │ 
 ├── migration/                           # Alembic database migrations
 │   ├── versions/
 │   │   ├── <timestamp>_init_db.py       # Initial migration script
 │   ├── env.py                           # Alembic environment setup
 │   ├── script.py.mako                   # Migration script template
 │   └── README                           # Notes about migrations
-│
+│    
 └── tests/                               # Unit & integration tests
     ├── domain/
     ├── application/
