@@ -1,158 +1,160 @@
-uv sync --link-mode=copy
-uvicorn app.main:app --reload
+# 🚀 RAG Template – FastAPI + LangChain + PGVector
 
-alembic init -t async migration
-alembic revision --autogenerate -m "init_ table"
-alembic upgrade head
+A **production-ready Retrieval-Augmented Generation (RAG)** template built with **FastAPI**, **LangChain**, and **PostgreSQL + PGVector**.  
+This project provides a clean architecture for building LLM-powered applications with scalable vector search, modular pipelines, and easy deployment via Docker and Nginx.
 
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-.\.venv\Scripts\Activate.ps1
+---
 
+## 🌟 Features
 
+- 🔍 **RAG Architecture** – Combines vector retrieval + LLM generation  
+- 🧩 **Modular Pipelines** – Embedding, retrieval, and generation separated cleanly  
+- 🗃️ **PGVector Integration** – Store and search embeddings in PostgreSQL  
+- ⚡ **FastAPI Backend** – High-performance async API for LLM apps  
+- 🛠️ **Dockerized Deployment** – Ready-to-run with Nginx reverse proxy  
+- 🧱 **Domain-Driven Design (DDD)** – Maintainable, scalable codebase  
+- 📊 **Observability Ready** – Easily integrate with Langfuse / LangWatch / Prometheus  
 
-my_project/
-├── src/                    # mã nguồn chính
-│   ├── main.py             # entry point, khởi tạo FastAPI app, load config, include routers
-│   ├── config/             # cấu hình tổng (settings, env, logger, etc.)
-│   │   ├── settings.py
-│   │   └── __init__.py
-│   ├── presentation/       # layer tương tác bên ngoài: API endpoints, HTTP layer
-│   │   ├── api/             # các router / controller
-│   │   │   ├── v1/           # nếu versioning API
-│   │   │   │   ├── endpoints/  # các route files
-│   │   │   │   └── dependencies/
-│   │   │   └── __init__.py
-│   │   ├── schemas/         # Pydantic models request/response
-│   │   └── __init__.py
-│   ├── application/         # layer ứng dụng / use cases / services
-│   │   ├── services/         # các UseCase / Application Service
-│   │   ├── dtos/             # optional: các DTO nếu cần chuyển giữa layers
-│   │   └── __init__.py
-│   ├── domain/              # domain core: nghiệp vụ
-│   │   ├── entities/         # các Entity
-│   │   ├── value_objects/
-│   │   ├── aggregates/       # nếu mô hình hóa aggregates
-│   │   ├── repositories/     # định nghĩa interface (abstract) của repository
-│   │   ├── domain_services/  # nghiệp vụ không rõ nên thuộc entity nào
-│   │   ├── events/           # domain events
-│   │   └── __init__.py
-│   ├── infrastructure/      # lớp bên ngoài hỗ trợ kỹ thuật
-│   │   ├── database/         # kết nối DB, ORM, migrations
-│   │   ├── repository_impl/  # implement các interface repository của domain
-│   │   ├── external/         # gọi service ngoài, api bên ngoài
-│   │   └── __init__.py
-│   └── utils/                # helper chung, thư viện tiện ích
-└── tests/                   # unit/integration tests
-    ├── domain/
-    ├── application/
-    └── presentation/
+---
 
+## 🧰 Tech Stack
 
-| Thư mục            | Nội dung / trách nhiệm                                                                                                                                                                |
-| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **main.py**        | Tạo FastAPI app, gắn routers, cấu hình middleware, startup/shutdown events.                                                                                                           |
-| **config**         | Cài đặt config (ví dụ lấy từ `.env`), cấu hình logging, cấu hình CORS, các thiết lập chung.                                                                                           |
-| **presentation**   | Tầng tiếp xúc với HTTP: routers, controllers, schemas để nhận request / trả response. Chỉ xử lý việc đưa nhận dữ liệu, không chứa logic nghiệp vụ nặng.                               |
-| **application**    | Các dịch vụ ứng dụng (use cases), phối hợp domain, orchestrate các repository, domain services, validate cao hơn nếu cần.                                                             |
-| **domain**         | Tầng cốt lõi: các khái niệm của nghiệp vụ, mô hình hóa domain: Entity, ValueObject, Aggregates, các interface (repository), events, invariants. Không biết gì về HTTP, DB, framework. |
-| **infrastructure** | Làm việc với DB (ví dụ SQLAlchemy, Tortoise, hoặc async ORM), triển khai interface repository, bên ngoài như dịch vụ gửi email, lưu file, caching, etc.                               |
-| **utils**          | Các helper, chức năng dùng chung (ví dụ format error, mã hóa, validate bổ sung…)                                                                                                      |
+| Layer | Technology |
+|--------|-------------|
+| Backend API | [FastAPI](https://fastapi.tiangolo.com/) |
+| LLM Framework | [LangChain](https://www.langchain.com/) |
+| Vector DB | [PGVector](https://github.com/pgvector/pgvector) |
+| Containerization | Docker + Docker Compose |
+| Reverse Proxy | Nginx |
+| Scheduler | APScheduler (async) |
+| Monitoring | Optional: Langfuse, LangWatch |
 
+---
 
-🔁 Luồng hoạt động (Flow)
-Request → Presentation (API)
-        → Application (Use Case)
-        → Domain (Business Logic)
-        → Infrastructure (Persistence / External)
+## ⚙️ Installation
 
-Khi trả dữ liệu:
-Infrastructure → Domain → Application → Presentation → Response
+### 1️⃣ Clone the repository
+```bash
+git clone https://github.com/baocong130899/rag.git
+cd rag
+git checkout develop
+```
 
+### 2️⃣ Setup environment
+Create `.env` file:
+```bash
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=ragdb
+OPENAI_API_KEY=your_openai_api_key
+JWT_SECRET=your_secret
+```
 
-src/
-│   __init__.py
-│   main.py
-│   container.py
+### 3️⃣ Run with Docker
+```bash
+docker-compose up -d --build
+```
+
+API available at → [http://localhost:8000](http://localhost:8000)
+
+---
+
+## 🧠 Project Structure
+
+```
+rag/
+├── pipelines/
+│   ├── embedding_pipeline.py
+│   ├── retrieval_pipeline.py
+│   └── generation_pipeline.py
 │
-├── config/
-│   └── __init__.py
+├── services/
+│   ├── vector_service.py
+│   ├── document_service.py
+│   └── llm_service.py
 │
-├── domain/
-│   ├── __init__.py
-│   ├── entities/
-│   │   └── __init__.py
-│   └── repositories/
-│       └── __init__.py
+├── api/
+│   ├── routers/
+│   └── main.py
 │
-├── application/
-│   └── __init__.py
-│   └── services/
-│       └── __init__.py
-│
-├── infrastructure/
-│   ├── __init__.py
-│   ├── database.py
-│   ├── models/
-│   │   └── __init__.py
-│   └── repository_impl/
-│       └── __init__.py
-│
-└── presentation/
-    ├── __init__.py
-    ├── api/
-    │   └── v1/
-    │       ├── __init__.py
-    │       └── endpoints/
-    │           └── __init__.py
-    └── schemas/
-        └── __init__.py
+└── config/
+    ├── settings.py
+    ├── logger.py
+    └── db.py
+```
 
+---
 
+## 📡 API Endpoints (Examples)
 
-src/
-├── main.py
-├── container.py
-├── config/
-│   └── settings.py
-│
-├── domain/
-│   ├── entities/
-│   ├── repositories/
-│   └── __init__.py
-│
-├── application/
-│   ├── services/
-│   └── __init__.py
-│
-├── infrastructure/
-│   ├── database.py
-│   ├── repository_impl/
-│   ├── models/
-│   └── __init__.py
-│
-├── presentation/
-│   ├── api/v1/endpoints/
-│   ├── schemas/
-│   └── __init__.py
-│
-└── rag/
-    ├── __init__.py
-    ├── pipelines/
-    │   ├── __init__.py
-    │   ├── embedding_pipeline.py     # Embedding + store
-    │   ├── retrieval_pipeline.py     # Vector search logic
-    │   └── generation_pipeline.py    # LLM response + synthesis
-    │
-    ├── services/
-    │   ├── __init__.py
-    │   └── rag_service.py            # Orchestrator RAGService
-    │
-    ├── adapters/
-    │   ├── __init__.py
-    │   ├── langchain_adapter.py      # Nếu dùng LangChain
-    │   ├── openai_adapter.py         # Gọi model từ OpenAI API
-    │   └── vectorstore_adapter.py    # pgvector / chroma / FAISS
-    │
-    └── schemas/
-        ├── __init__.py
-        └── rag_schema.py             # Request/Response cho API
+| Endpoint | Method | Description |
+|-----------|--------|-------------|
+| `/api/v1/embed` | POST | Store document embeddings |
+| `/api/v1/query` | POST | Retrieve and generate answer |
+| `/api/v1/health` | GET | Health check endpoint |
+
+---
+
+## 🌍 Deployment
+
+### 🐳 Docker Compose
+This template includes:
+- **FastAPI service**
+- **PostgreSQL + PGVector**
+- **Nginx reverse proxy** (CORS, HTTPS-ready)
+
+### 🔁 Reverse Proxy Example
+```nginx
+add_header 'Access-Control-Allow-Origin' '*' always;
+add_header 'Access-Control-Allow-Methods' 'GET, POST, PUT, DELETE, OPTIONS' always;
+add_header 'Access-Control-Allow-Headers' 'Authorization, Content-Type' always;
+```
+
+---
+
+## 🧩 Integration with Langfuse / LangWatch
+
+You can integrate monitoring easily:
+```bash
+pip install langfuse
+```
+Then wrap pipelines to track LLM calls, latency, and cost.
+
+---
+
+## 📈 Future Roadmap
+
+- [ ] Add Hybrid Search (BM25 + Vector)
+- [ ] Add Authentication (JWT-based)
+- [ ] Integrate OpenTelemetry tracing
+- [ ] Add Streamlit frontend demo
+- [ ] Add test coverage
+
+---
+
+## 🏷️ Topics
+
+`rag`, `fastapi`, `langchain`, `pgvector`, `llm`,  
+`retrieval-augmented-generation`, `vector-database`,  
+`docker`, `nginx`, `openai`, `ai-backend`, `mlops`,  
+`langfuse`, `langwatch`, `python`, `chatbot`, `template`
+
+---
+
+## 🪪 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+---
+
+## 💫 Author
+
+**Lê Công**  
+GitHub: [@baocong130899](https://github.com/baocong130899)  
+Email: lecong.dev@gmail.com  
+
+---
+
+## ⭐ Support
+
+If you find this project useful, please **star** 🌟 the repository and consider contributing!
