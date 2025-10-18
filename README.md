@@ -1,11 +1,30 @@
 # 🚀 FastAPI-RAG-Template – Retrieval-Augmented Generation with LangChain & PGVector
 
-[![GitHub stars](https://img.shields.io/github/stars/baocong130899/rag)](https://github.com/baocong130899/rag/stargazers)  
-[![GitHub issues](https://img.shields.io/github/issues/baocong130899/rag)](https://github.com/baocong130899/rag/issues)  
-[![GitHub license](https://img.shields.io/github/license/baocong130899/rag)](LICENSE)  
-[![Docker](https://img.shields.io/badge/docker-ready-blue)](https://www.docker.com/)  
-[![FastAPI](https://img.shields.io/badge/FastAPI-Framework-brightgreen)](https://fastapi.tiangolo.com/)  
-[![LangChain](https://img.shields.io/badge/LangChain-Enabled-orange)](https://docs.langchain.com/)
+<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+  <a href="https://github.com/baocong130899/rag/stargazers" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/github/stars/baocong130899/fastapi-rag-template" alt="GitHub stars">
+  </a>
+
+  <a href="https://github.com/baocong130899/fastapi-rag-template/issues" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/github/issues/baocong130899/fastapi-rag-template" alt="GitHub issues">
+  </a>
+
+  <a href="LICENSE" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/github/license/baocong130899/fastapi-rag-template" alt="License">
+  </a>
+
+  <a href="https://www.docker.com/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/docker-ready-blue" alt="Docker">
+  </a>
+
+  <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/FastAPI-Framework-brightgreen" alt="FastAPI">
+  </a>
+
+  <a href="https://docs.langchain.com/" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.shields.io/badge/LangChain-Enabled-orange" alt="LangChain">
+  </a>
+</div>
 
 > **A production-ready template for building Retrieval-Augmented Generation (RAG) systems** with **FastAPI**, **LangChain**, and **PostgreSQL + PGVector**.  
 > Build scalable LLM-powered applications with vector search, modular pipelines and ready-to-deploy infrastructure.
