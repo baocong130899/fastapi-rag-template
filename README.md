@@ -117,7 +117,7 @@ cp .env.example .env
 ### 3️⃣ Build & run with Docker
 
 ```bash
-docker-compose up -d --build  
+docker compose up -d --build  
 ```
 
 ### 4️⃣ Verification

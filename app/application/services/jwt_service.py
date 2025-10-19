@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 import jwt
@@ -18,6 +19,7 @@ class JwtService:
         self.algorithm = algorithm
         self.access_expires = access_expires
         self.refresh_expires = refresh_expires
+        self.refresh_payload = {}
 
     def create_access_token(
         self, subject: str, extra_claims: Optional[Dict[str, Any]] = None
@@ -42,6 +44,7 @@ class JwtService:
         """Create refresh token."""
         now = datetime.now()
         payload: Dict[str, Any] = {
+            "jti": str(uuid.uuid4()),
             "sub": subject,
             "iat": now.timestamp(),
             "exp": now + timedelta(seconds=self.refresh_expires),
@@ -50,8 +53,12 @@ class JwtService:
         if extra_claims:
             payload.update(extra_claims)
 
+        self.refresh_payload = payload
         token = jwt.encode(payload=payload, key=self.secret, algorithm=self.algorithm)
         return token
+    
+    def get_refresh_token_payload(self):
+        return self.refresh_payload
 
     def decode_token(self, token: str) -> Dict[str, Any]:
         try:

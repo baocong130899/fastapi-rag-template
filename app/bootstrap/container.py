@@ -4,6 +4,9 @@ from app.infrastructure.database import SessionManager
 from app.infrastructure.repository_impl.user_repository_impl import (
     SQLAlchemyUserRepository,
 )
+from app.infrastructure.repository_impl.refresh_token_impl import (
+    SqlAlchemyRefreshTokenRepository,
+)
 from app.application.services.user_service import UserService
 from app.application.services.auth_service import AuthService
 from app.application.services.jwt_service import JwtService

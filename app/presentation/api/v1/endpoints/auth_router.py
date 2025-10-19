@@ -3,9 +3,10 @@ from fastapi import APIRouter, Depends
 from dependency_injector.wiring import inject, Provide
 from app.bootstrap.container import Container
 from app.presentation.api.dependencies import get_current_user
-from app.presentation.schemas.auth_schemas import AuthLogin, AuthResponse
+from app.presentation.schemas.auth_schemas import AuthLogin, AuthResponse, AuthRefreshResponse
 from app.application.services.auth_service import AuthService
 from app.presentation.schemas.user_schemas import UserResponse
+from app.presentation.api.dependencies import oauth2_scheme
 
 
 router = APIRouter()
@@ -24,8 +25,13 @@ async def login(
 
 
 @router.post("/refresh")
-async def refresh():
-    pass
+@inject
+async def refresh(
+    refresh_token: str = Depends(oauth2_scheme),
+    auth_svc: AuthService = Depends(Provide[Container.auth_service]),
+):
+    access_token = await auth_svc.refresh(refresh_token=refresh_token)
+    return AuthRefreshResponse(access_token=access_token)
 
 
 @router.get("/me")

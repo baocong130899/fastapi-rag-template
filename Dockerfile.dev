@@ -23,11 +23,11 @@ COPY . .
 # Run uv sync (will create .venv in /app).
 RUN uv sync
 
-# Ensure entrypoint is executable.
-RUN chmod +x entrypoint.sh
-
 # Create logs directory.
 RUN mkdir -p logs
 
-# Entry point.
+# Run the application
+COPY entrypoint.sh ./ 
+RUN chmod +x entrypoint.sh
 ENTRYPOINT ["./entrypoint.sh"]
+# CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
