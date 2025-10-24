@@ -11,3 +11,5 @@ class UserModel(Base, TimestampMixin):
     name = Column(String(255), nullable=False)
     hashed_password = Column(String(255), nullable=False)
     is_active = Column(Boolean, default=True)
+
+

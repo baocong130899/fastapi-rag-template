@@ -1,35 +1,5 @@
 # 🚀 FastAPI-RAG-Template – Retrieval-Augmented Generation with LangChain & PGVector
 
-<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-  <a href="https://github.com/baocong130899/fastapi-rag-template/stargazers" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/github/stars/baocong130899/fastapi-rag-template" alt="GitHub stars">
-  </a>
-
-  <a href="https://github.com/baocong130899/fastapi-rag-template/issues" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/github/issues/baocong130899/fastapi-rag-template" alt="GitHub issues">
-  </a>
-
-  <a href="LICENSE" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/github/license/baocong130899/fastapi-rag-template" alt="License">
-  </a>
-
-  <a href="https://www.docker.com/" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/badge/docker-ready-blue" alt="Docker">
-  </a>
-
-  <a href="https://fastapi.tiangolo.com/" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/badge/FastAPI-Framework-brightgreen" alt="FastAPI">
-  </a>
-
-  <a href="https://alembic.sqlalchemy.org/en/latest/" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/badge/Alembic-Framework-orange" alt="Alembic">
-  </a>
-
-  <a href="https://docs.langchain.com/" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.shields.io/badge/LangChain-Enabled-orange" alt="LangChain">
-  </a>
-</div>
-
 > **A production-ready template for building Retrieval-Augmented Generation (RAG) systems** with **FastAPI**, **LangChain**, and **PostgreSQL + PGVector**.  
 > Build scalable LLM-powered applications with vector search, modular pipelines and ready-to-deploy infrastructure.
 
@@ -45,12 +15,7 @@
 - [📡 API Endpoints](#📡-api-endpoints)   
 - [🧩 Integration](#🧩-integration)  
 - [📈 Roadmap](#📈-roadmap)  
-- [🛠️ Contributing](#🛠️-contributing)  
 - [🐞 Known Issues](#🐞-known-issues)  
-- [🏷️ Topics](#🏷️-topics)  
-- [📄 License](#🪪-license)  
-- [💫 Author](#💫-author)  
-- [📝 Last Updated](#📝-last-updated)  
 
 ---
 
@@ -117,7 +82,7 @@ cp .env.example .env
 ### 3️⃣ Build & run with Docker
 
 ```bash
-docker-compose up -d --build  
+docker compose up -d --build  
 ```
 
 ### 4️⃣ Verification
@@ -255,20 +220,6 @@ Wrap your pipelines to track LLM latency, cost, and usage easily.
 
 ---
 
-## 🛠️ Contributing
-
-We welcome contributions! Please review the following steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/YourFeature`)
-3. Commit your changes with clear messages
-4. Push to your fork and open a Pull Request
-5. Ensure all CI checks pass and include documentation / test where needed
-
-Read [CLICENSE](CLICENSE) for more details.
-
----
-
 ## 🐞 Known Issues
 
 * 🤖 LLM prompt drift may occur with large contexts — consider context chunking
@@ -276,30 +227,3 @@ Read [CLICENSE](CLICENSE) for more details.
 * 🚧 Deployment scripts assume Linux environment — Mac/Windows users may need adjustments
 
 ---
-
-## 🏷️ Topics
-
-`rag`, `fastapi`, `langchain`, `pgvector`, `llm`,  
-`retrieval-augmented-generation`, `vector-database`,  
-`docker`, `nginx`, `openai`, `ai-backend`,
-`langfuse`, `langwatch`, `python`, `chatbot`, `template`
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
-
----
-
-## 💫 Author
-
-**Lê Công**  
-GitHub: [@baocong130899](https://github.com/baocong130899)  
-Email: [lebaocongct@gmail.com](mailto:lebaocongct@gmail.com)
-
----
-
-## 📝 Last Updated
-
-*Last updated: 2025-10-18*
