@@ -49,14 +49,12 @@ class SessionManager:
                 await conn.execute(text("SELECT 1"))
             return True
         except Exception as e:
-            print(f"❌ Database connection failed: {e}", flush=True)
             return False
 
     async def close(self) -> None:
         """Dispose of the database engine."""
         if self.engine:
             await self.engine.dispose()
-            print(f"✅ Database connection close!.", flush=True)
 
     @asynccontextmanager
     async def async_generator(self) -> AsyncIterator[AsyncSession]:

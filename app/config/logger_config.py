@@ -13,11 +13,10 @@ class InterceptHandler(logging.Handler):
         logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
 
 
-def configure_logging():
+def configure_logging(settings: Settings):
     """
     Loguru configuration is based on environment variables from settings.
     """
-    settings = Settings()
 
     # Setup default values.
     log_level = settings.LOG_LEVEL
@@ -84,6 +83,12 @@ def configure_logging():
     # 5. Block logs from the standard logging module.
     logging.getLogger().handlers = []
     logging.basicConfig(handlers=[InterceptHandler()], level=0)
-    for name in ["uvicorn", "uvicorn.error", "uvicorn.access", "fastapi"]:
+    modules = [
+        "uvicorn", 
+        "uvicorn.error", 
+        "uvicorn.access", 
+        "fastapi"
+    ]
+    for name in modules:
         logging.getLogger(name).handlers = []
         logging.getLogger(name).propagate = True

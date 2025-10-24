@@ -7,43 +7,18 @@ from app.presentation.api.v1.endpoints.base_router import api_router
 from app.config.logger_config import configure_logging
 
 
-def init_container() -> Container:
-    container = Container()
-    return container
-
-
-def configure_cors(app: FastAPI):
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-    # Init container.
-    container = init_container()
-    app.state.container = container
-    logger.info("Creating the container successfully!.")
-
-    # Get settings.
-    settings = container.settings()
-
-    # Set app.
-    app.title = settings.APP_NAME
-    app.openapi_version
-
-    logger.info("Set the values to create the app successfully!.")
+    # Get container from state.
+    container: Container = app.state._state.get("container")
 
     # Check connection.
     if not await container.session_manager().connect():
         raise RuntimeError("Cannot connect to database!.")
-
     logger.info("Connect to database successfully!.")
+
+    logger.info("Initialize app successfully!.")
 
     yield
 
@@ -51,26 +26,45 @@ async def lifespan(app: FastAPI):
     await container.session_manager().close()
     logger.info("Close connect to database successfully!.")
 
+    # Close logs.
+    logger.info("Logs completed!.")
     await logger.complete()
 
 
-def create_app():
+def create_app(container: Container):
+
+    # Get settings.
+    settings = container.settings()
 
     # Init logger.
-    configure_logging()
+    configure_logging(settings=settings)
 
     # Declare app.
-    app = FastAPI(lifespan=lifespan)
+    app = FastAPI(
+        lifespan=lifespan,
+        title=settings.APP_NAME,
+    )
 
     # Declare cors.
-    configure_cors(app)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
     logger.info("Initialize cors successfully!.")
 
     # Declare routers.
     app.include_router(api_router, prefix="/api/v1")
     logger.info("Initialize routers successfully!.")
 
+    # Add state.
+    app.state.container = container
+    logger.info("Initialize state successfully!.")
+
     return app
 
 
-app = create_app()
+container = Container()
+app = create_app(container=container)
