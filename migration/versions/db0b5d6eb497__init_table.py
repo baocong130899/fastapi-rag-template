@@ -1,8 +1,8 @@
-"""init_ table
+"""_init_table
 
-Revision ID: 2fd82f7411e5
+Revision ID: db0b5d6eb497
 Revises: 
-Create Date: 2025-10-07 21:52:32.146309
+Create Date: 2025-10-29 20:54:33.223318
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '2fd82f7411e5'
+revision: str = 'db0b5d6eb497'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -29,8 +29,7 @@ def upgrade() -> None:
     sa.Column('is_active', sa.Boolean(), nullable=True),
     sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=True),
-    sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email')
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
     op.create_table('documents',
@@ -54,6 +53,24 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('tokens',
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('user_id', sa.UUID(), nullable=True),
+    sa.Column('jti', sa.String(length=100), nullable=False),
+    sa.Column('type', sa.String(length=45), nullable=True, comment='Type: access_token, refresh_token'),
+    sa.Column('issued_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('expires_at', sa.TIMESTAMP(), nullable=False),
+    sa.Column('used', sa.Boolean(), nullable=False),
+    sa.Column('revoked', sa.Boolean(), nullable=False),
+    sa.Column('revoked_at', sa.TIMESTAMP(), nullable=True),
+    sa.Column('ip_address', sa.String(length=45), nullable=True),
+    sa.Column('user_agent', sa.Text(), nullable=True),
+    sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=True),
+    sa.Column('updated_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_tokens_jti'), 'tokens', ['jti'], unique=True)
     op.create_table('chat',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=True),
@@ -93,6 +110,8 @@ def downgrade() -> None:
     op.drop_table('chat_message')
     op.drop_table('document_status')
     op.drop_table('chat')
+    op.drop_index(op.f('ix_tokens_jti'), table_name='tokens')
+    op.drop_table('tokens')
     op.drop_table('knowledge_base')
     op.drop_table('documents')
     op.drop_index(op.f('ix_users_email'), table_name='users')

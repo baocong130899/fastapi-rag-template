@@ -3,11 +3,11 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Install build deps.
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    python3-dev \
-    libpq-dev \
-    && rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     build-essential \
+#     python3-dev \
+#     libpq-dev \
+#     && rm -rf /var/lib/apt/lists/*
 
 # Copy uv binary.
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
@@ -27,7 +27,4 @@ RUN uv sync
 RUN mkdir -p logs
 
 # Run the application
-COPY entrypoint.sh ./ 
-RUN chmod +x entrypoint.sh
-ENTRYPOINT ["./entrypoint.sh"]
-# CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"]

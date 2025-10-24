@@ -19,6 +19,7 @@ class JwtService:
         self.algorithm = algorithm
         self.access_expires = access_expires
         self.refresh_expires = refresh_expires
+        self.access_payload = {}
         self.refresh_payload = {}
 
     def create_access_token(
@@ -28,6 +29,7 @@ class JwtService:
         now = datetime.now()
         payload: Dict[str, Any] = {
             "sub": subject,
+            "jti": str(uuid.uuid4()),
             "iat": now.timestamp(),
             "exp": now + timedelta(seconds=self.access_expires),
             "type": TokenType.ACCESS.value,
@@ -35,6 +37,7 @@ class JwtService:
         if extra_claims:
             payload.update(extra_claims)
 
+        self.access_payload = payload
         token = jwt.encode(payload=payload, key=self.secret, algorithm=self.algorithm)
         return token
 
@@ -44,8 +47,8 @@ class JwtService:
         """Create refresh token."""
         now = datetime.now()
         payload: Dict[str, Any] = {
-            "jti": str(uuid.uuid4()),
             "sub": subject,
+            "jti": str(uuid.uuid4()),
             "iat": now.timestamp(),
             "exp": now + timedelta(seconds=self.refresh_expires),
             "type": TokenType.REFRESH.value,
@@ -59,6 +62,9 @@ class JwtService:
     
     def get_refresh_token_payload(self):
         return self.refresh_payload
+    
+    def get_access_token_payload(self):
+        return self.access_payload
 
     def decode_token(self, token: str) -> Dict[str, Any]:
         try:

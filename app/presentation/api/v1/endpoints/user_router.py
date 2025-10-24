@@ -55,9 +55,9 @@ async def update(
     pass
 
 
-@router.delete("/{id}")
+@router.delete("/{id}", status_code=204)
 # @inject
 async def delete(
     id: UUID, service: UserService = Depends(Provide[Container.user_service])
 ):
-    pass
+    await service.delete_user(id=id)

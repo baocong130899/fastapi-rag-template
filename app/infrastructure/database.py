@@ -71,6 +71,6 @@ class SessionManager:
             # await session.commit()
         except Exception as e:
             await session.rollback()
-            raise RuntimeError(f"Database session error: {e!r}") from e
+            raise e
         finally:
             await session.aclose()

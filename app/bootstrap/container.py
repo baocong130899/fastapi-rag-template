@@ -4,8 +4,8 @@ from app.infrastructure.database import SessionManager
 from app.infrastructure.repository_impl.user_repository_impl import (
     SQLAlchemyUserRepository,
 )
-from app.infrastructure.repository_impl.refresh_token_impl import (
-    SqlAlchemyRefreshTokenRepository,
+from app.infrastructure.repository_impl.token_impl import (
+    SqlAlchemyTokenRepository,
 )
 from app.application.services.user_service import UserService
 from app.application.services.auth_service import AuthService
@@ -22,16 +22,10 @@ class Container(containers.DeclarativeContainer):
     )
     settings = providers.Singleton(Settings)
     session_manager = providers.Singleton(SessionManager, settings=settings)
-    user_repository = providers.Factory(
-        SQLAlchemyUserRepository,
-        session_factory=session_manager.provided.async_generator,
-    )
+    user_repository = providers.Factory(SQLAlchemyUserRepository)
+    token_repository = providers.Factory(SqlAlchemyTokenRepository)
+
     hasher_service = providers.Singleton(HasherService)
-    user_service = providers.Factory(
-        UserService,
-        user_repo=user_repository,
-        hasher_svc=hasher_service,
-    )
     jwt_service = providers.Factory(
         JwtService,
         secret=settings.provided.JWT_SECRET,
@@ -39,9 +33,17 @@ class Container(containers.DeclarativeContainer):
         access_expires=settings.provided.JWT_ACCESS_EXPIRES_IN,
         refresh_expires=settings.provided.JWT_REFRESH_EXPIRES_IN,
     )
+    user_service = providers.Factory(
+        UserService,
+        user_repo=user_repository,
+        hasher_svc=hasher_service,
+        session_factory=session_manager.provided.async_generator,
+    )
     auth_service = providers.Factory(
         AuthService,
         user_repo=user_repository,
+        token_repo=token_repository,
         jwt_svc=jwt_service,
         hasher_svc=hasher_service,
+        session_factory=session_manager.provided.async_generator,
     )

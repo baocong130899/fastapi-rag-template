@@ -30,8 +30,8 @@ async def refresh(
     refresh_token: str = Depends(oauth2_scheme),
     auth_svc: AuthService = Depends(Provide[Container.auth_service]),
 ):
-    access_token = await auth_svc.refresh(refresh_token=refresh_token)
-    return AuthRefreshResponse(access_token=access_token)
+    result = await auth_svc.refresh(refresh_token=refresh_token)
+    return AuthRefreshResponse(access_token=result.access_token)
 
 
 @router.get("/me")
@@ -39,6 +39,10 @@ async def me(current_user: UserResponse = Depends(get_current_user)):
     return current_user
 
 
-@router.post("/logout")
-async def logout():
-    pass
+@router.post("/logout", status_code=200)
+@inject
+async def logout(
+    current_user: UserResponse = Depends(get_current_user),
+    auth_svc: AuthService = Depends(Provide[Container.auth_service]),
+):
+    await auth_svc.revoke_token(user_id=current_user.id)
