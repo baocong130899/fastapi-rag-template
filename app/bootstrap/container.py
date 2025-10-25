@@ -11,6 +11,12 @@ from app.application.services.user_service import UserService
 from app.application.services.auth_service import AuthService
 from app.application.services.jwt_service import JwtService
 from app.application.services.hasher_service import HasherService
+from app.ai.adapters.chunking import RecursiveCharacterAdapter
+from app.ai.adapters.document_loading import (
+    TextAdapter,
+    PyPDFAdapter,
+)
+from app.ai.factories import LoaderFactory
 
 
 class Container(containers.DeclarativeContainer):
@@ -47,3 +53,23 @@ class Container(containers.DeclarativeContainer):
         hasher_svc=hasher_service,
         session_factory=session_manager.provided.async_generator,
     )
+
+    loader_factories = providers.FactoryAggregate(
+        txt=providers.Singleton(TextAdapter),
+        pdf=providers.Singleton(PyPDFAdapter, mode=settings.provided.PAGE_MODE)
+    )
+    loader_factory = providers.Singleton(
+        LoaderFactory,
+        factory_aggregate=loader_factories,
+    )
+    chunker_factory = providers.Selector(
+        selector=settings.provided.CHUNKING_ADAPTER,
+        recursive_character=providers.Singleton(
+            RecursiveCharacterAdapter,
+            chunk_size=settings.provided.CHUNK_SZIE,
+            chunk_overlap=settings.provided.CHUNK_OVERLAP,
+            separators=settings.provided.SEPARATORS,
+        )
+    )
+
+

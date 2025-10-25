@@ -1,5 +1,6 @@
 import uuid
-from sqlalchemy import Column, String, UUID, ForeignKey, ARRAY, BigInteger, Text
+from sqlalchemy import Column, String, UUID, ForeignKey, ARRAY, BigInteger, Text, JSON
+from pgvector.sqlalchemy import Vector
 from .base import Base, TimestampMixin
 
 
@@ -22,8 +23,8 @@ class Document(Base, TimestampMixin):
     file_hash = Column(String(255))
 
 
-class DocumentStatus(Base, TimestampMixin):
-    __tablename__ = "document_status"
+class DocumentEmbeddingsStatus(Base, TimestampMixin):
+    __tablename__ = "document_embeddings_status"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     document_id = Column(
@@ -31,3 +32,12 @@ class DocumentStatus(Base, TimestampMixin):
     )
     status = Column(String(50), nullable=False)
     error = Column(Text)
+
+class Embeddings(Base):
+    __tablename__ = "embeddings"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    embed = Column(Vector(), nullable=False)
+    content = Column(Text, nullable=False)
+    cmetadata = Column(JSON, nullable=True)
+    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id", ondelete="CASCADE"))
