@@ -1,7 +1,11 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr
 from app.infrastructure.enums.environment_enum import EnvironmentType
+from app.ai.enums import (
+    ChunkingProvider, 
+    PageModeProvider,
+)
 
 
 class Settings(BaseSettings):
@@ -35,6 +39,25 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_ACCESS_EXPIRES_IN: int = 3600  # 1h.
     JWT_REFRESH_EXPIRES_IN: int = 86400 * 7  # 7 day.
+
+    CHUNKING_ADAPTER: ChunkingProvider = ChunkingProvider.RECURSIVE_CHARACTER.value
+    CHUNK_SZIE: int = 1024
+    CHUNK_OVERLAP: int = 250
+    SEPARATORS: List[str] = [
+        "\n\n",
+        "\n",
+        " ",
+        ".",
+        ",",
+        "\u200b",  # Zero-width space
+        "\uff0c",  # Fullwidth comma
+        "\u3001",  # Ideographic comma
+        "\uff0e",  # Fullwidth full stop
+        "\u3002",  # Ideographic full stop
+        "",
+    ]
+
+    PAGE_MODE: PageModeProvider = PageModeProvider.PAGE.value
 
     @property
     def get_database_url(self) -> str:
