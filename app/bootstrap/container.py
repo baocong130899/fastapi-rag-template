@@ -11,10 +11,10 @@ from app.application.services.user_service import UserService
 from app.application.services.auth_service import AuthService
 from app.application.services.jwt_service import JwtService
 from app.application.services.hasher_service import HasherService
-from app.ai.adapters.chunking import RecursiveCharacterAdapter
+from app.ai.adapters.chunking import RecursiveCharacter
 from app.ai.adapters.document_loading import (
-    TextAdapter,
-    PyPDFAdapter,
+    Text,
+    PyPDF,
 )
 from app.ai.factories import LoaderFactory
 
@@ -55,8 +55,8 @@ class Container(containers.DeclarativeContainer):
     )
 
     loader_factories = providers.FactoryAggregate(
-        txt=providers.Singleton(TextAdapter),
-        pdf=providers.Singleton(PyPDFAdapter, mode=settings.provided.PAGE_MODE)
+        txt=providers.Singleton(Text),
+        pdf=providers.Singleton(PyPDF, mode=settings.provided.PAGE_MODE)
     )
     loader_factory = providers.Singleton(
         LoaderFactory,
@@ -65,7 +65,7 @@ class Container(containers.DeclarativeContainer):
     chunker_factory = providers.Selector(
         selector=settings.provided.CHUNKING_ADAPTER,
         recursive_character=providers.Singleton(
-            RecursiveCharacterAdapter,
+            RecursiveCharacter,
             chunk_size=settings.provided.CHUNK_SZIE,
             chunk_overlap=settings.provided.CHUNK_OVERLAP,
             separators=settings.provided.SEPARATORS,
