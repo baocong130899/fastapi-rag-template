@@ -1,6 +1,5 @@
 import os
-from langchain_community.document_loaders.base import BaseLoader
-from app.ai.adapters.document_loading import BaseDocumentLoadingAdapter
+from app.ai.adapters.document_loading import DocumentLoader
 from app.ai.enums import FileExtensionProvider
 
 
@@ -16,8 +15,7 @@ class LoaderFactoryWrapper:
             raise ValueError(f"Unsupported file extension: .{ext}")
         return FileExtensionProvider(ext)
 
-    async def load(self, file_path: str) -> BaseLoader:
+    def get(self, file_path: str) -> DocumentLoader:
         """"""
         ext = self.check_extension(file_path).value
-        loader: BaseDocumentLoadingAdapter = self.factory_aggregate[ext]()
-        return await loader.load(file_path)
+        return self.factory_aggregate[ext]()

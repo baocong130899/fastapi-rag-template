@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class PageModeProvider(Enum):
+class PageModeEnum(Enum):
     """"""
 
     SINGLE = "single"

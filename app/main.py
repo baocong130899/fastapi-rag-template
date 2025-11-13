@@ -5,6 +5,7 @@ from loguru import logger
 from app.bootstrap.container import Container
 from app.presentation.api.v1.endpoints.base_router import api_router
 from app.config.logger_config import configure_logging
+from app.infrastructure.messaging import RabbitMQClient
 
 
 @asynccontextmanager
@@ -18,6 +19,14 @@ async def lifespan(app: FastAPI):
         raise RuntimeError("Cannot connect to database!.")
     logger.info("Connect to database successfully!.")
 
+    # Load vector store.
+    vector_store_adapter = container.vector_store()
+    await vector_store_adapter.load()
+
+    # Setup messaging.
+    messaging_client = container.messaging_client()
+    await messaging_client.init()
+
     logger.info("Initialize app successfully!.")
 
     yield
@@ -25,6 +34,9 @@ async def lifespan(app: FastAPI):
     # Close connection.
     await container.session_manager().close()
     logger.info("Close connect to database successfully!.")
+
+    # Close messaging client connection.
+    await container.messaging_client().close()
 
     # Close logs.
     logger.info("Logs completed!.")
