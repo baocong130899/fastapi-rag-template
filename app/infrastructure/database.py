@@ -17,13 +17,9 @@ class SessionManager:
     """Manages asynchronous DB sessions with connection pooling."""
 
     def __init__(self, settings: Settings) -> None:
-        self.engine: Optional[AsyncEngine] = None
-        self._sessionmaker: Optional[async_sessionmaker[AsyncSession]] = None
-        self.settings = settings
-        self.init_db()
 
-    def init_db(self) -> None:
-        """Initialize the database engine and session factory."""
+        self.settings = settings
+
         self.engine = create_async_engine(
             url=self.settings.get_database_url,
             poolclass=AsyncAdaptedQueuePool,
@@ -41,6 +37,9 @@ class SessionManager:
             autoflush=False,
             class_=AsyncSession,
         )
+    
+    def get_engine(self) -> AsyncEngine:
+        return self.engine
 
     async def connect(self) -> bool:
         """Check connection."""

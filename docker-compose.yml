@@ -2,6 +2,27 @@ networks:
   dev:
     driver: bridge
 services:
+  rabbitmq:
+    image: rabbitmq:3-management   # includes management UI on 15672
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-guest}
+      RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST:-/}
+      TZ: ${TZ}
+    ports:
+      - "${RABBITMQ_AMQP_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    networks:
+      - dev
+
   pgvector:
     image:  pgvector/pgvector:pg16
     container_name: pgvector
@@ -34,6 +55,8 @@ services:
       - .env
     depends_on:
       pgvector:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     restart: on-failure:10
     networks:
