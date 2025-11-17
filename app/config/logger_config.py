@@ -1,48 +1,79 @@
 import sys
+import re
 import logging
 from loguru import logger
 from app.config.settings import Settings
 
 
 class InterceptHandler(logging.Handler):
+    """
+    Redirect standard logging records into Loguru.
+    """
     def emit(self, record):
         try:
             level = logger.level(record.levelname).name
         except ValueError:
             level = record.levelno
+
+        # depth can be adjusted depending on your stack structure
         logger.opt(depth=6, exception=record.exc_info).log(level, record.getMessage())
 
+class RedactQueryFilter(logging.Filter):
+    """
+    A logging filter that replaces the query string (?...) with ?<redacted>
+    before the log record is emitted.
+
+    This is intended for uvicorn.access logging lines.
+    """
+    def filter(self, record: logging.LogRecord) -> bool:
+        try:
+            if record.args and len(record.args) >= 3:
+                # Typically the path with query string.
+                path_qs = record.args[2] 
+                # Redact query string.
+                redacted = re.sub(r'\?.*', '?<redacted>', path_qs) 
+                # Rebuild args with redacted path.
+                args = list(record.args)
+                args[2] = redacted
+                record.args = tuple(args)
+            return True
+        except Exception:
+            return True
 
 def configure_logging(settings: Settings):
     """
-    Loguru configuration is based on environment variables from settings.
+    Configure Loguru logging based on environment variables provided by Settings.
     """
 
-    # Setup default values.
+    # Load settings
     log_level = settings.LOG_LEVEL
     log_message_file = settings.LOG_MESSAGE_FILE
     log_error_file = settings.LOG_ERROR_FILE
     json_format = settings.LOG_JSON_FORMAT
-    diagnose = (
-        settings.LOG_DIAGNOSE
-    )  # Display the values of variables at each frame of the stack trace.
-    backtrace = (
-        settings.LOG_BACKTRACE
-    )  # Record the sequence of function calls leading to the point where the error occurred (traceback).
-    file_format = "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {name}:{function}:{line} | {message}"
+    diagnose = settings.LOG_DIAGNOSE
+    backtrace = settings.LOG_BACKTRACE
 
+    # file_format = (
+    #     "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | "
+    #     "{name}:{function}:{line} | {message}"
+    # )
+
+    file_format = (
+        "{time:YYYY-MM-DD HH:mm:ss.SSS} | {level: <8} | {message}"
+    )
+
+    # Remove default Loguru configuration
     logger.remove()
 
-    # 1. Define the format based on the LOG_JSON_FORMAT environment variable.
+    # JSON log format = serialized output
     if json_format:
         colorize = False
         serialize = True
     else:
-        # Easy-to-read format for files and console (without using serialize).
         colorize = False
         serialize = False
 
-    # 2. Sink 1: Regular logging (MESSAGE_FILE).
+    # Sink 1: normal log file (info/debug/warning)
     logger.add(
         sink=log_message_file,
         level=log_level,
@@ -56,10 +87,10 @@ def configure_logging(settings: Settings):
         filter=lambda rec: rec["level"].no < logger.level("ERROR").no,
     )
 
-    # 2. Sink 2: Regular logging (ERROR_FILE).
+    # Sink 2: error log file (ERROR+)
     logger.add(
         sink=log_error_file,
-        level="ERROR",  # Only record from ERROR and above
+        level="ERROR",
         format=file_format,
         rotation="5 MB",
         retention="7 days",
@@ -70,25 +101,28 @@ def configure_logging(settings: Settings):
         backtrace=backtrace,
     )
 
-    # 4. Sink 3: Console (always keep it for easy debugging).
+    # Sink 3: console output
     logger.add(
         sys.stderr,
         level=log_level,
-        format="<green>{time:HH:mm:ss.SSS}</green> | <level>{level: <8}</level> | {name} - <level>{message}</level>",
+        format="<green>{time:HH:mm:ss.SSS}</green> | "
+            "<level>{level: <8}</level> | <level>{message}</level>",
         colorize=True,
         diagnose=diagnose,
         backtrace=backtrace,
     )
 
-    # 5. Block logs from the standard logging module.
+    # Redirect standard logging → Loguru
     logging.getLogger().handlers = []
     logging.basicConfig(handlers=[InterceptHandler()], level=0)
-    modules = [
-        "uvicorn", 
-        "uvicorn.error", 
-        "uvicorn.access", 
-        "fastapi"
-    ]
+
+    # Configure specific modules
+    modules = ["fastapi", "uvicorn", "uvicorn.error", "uvicorn.access"] # Modules to redirect to Loguru: "fastapi", "uvicorn", "uvicorn.error", etc.
     for name in modules:
-        logging.getLogger(name).handlers = []
-        logging.getLogger(name).propagate = True
+        logger_std = logging.getLogger(name)
+        logger_std.handlers = []
+        logger_std.propagate = True  # Required for InterceptHandler to capture logs
+
+    # --- NEW: Attach query-redaction filter to uvicorn.access ---
+    access_logger = logging.getLogger("uvicorn.access")
+    access_logger.addFilter(RedactQueryFilter())

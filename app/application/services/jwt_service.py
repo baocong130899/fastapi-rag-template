@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
 import jwt
 from jwt import PyJWTError
-from app.infrastructure.enums.auth_enum import TokenType
+from app.infrastructure.enums import TokenType
 
 
 class JwtService:

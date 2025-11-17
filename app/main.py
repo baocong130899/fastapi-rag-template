@@ -5,7 +5,6 @@ from loguru import logger
 from app.bootstrap.container import Container
 from app.presentation.api.v1.endpoints.base_router import api_router
 from app.config.logger_config import configure_logging
-from app.infrastructure.messaging import RabbitMQClient
 
 
 @asynccontextmanager

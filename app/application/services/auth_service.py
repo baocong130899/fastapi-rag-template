@@ -11,7 +11,7 @@ from app.domain.entities.auth_entity import (
     AuthRefresh as DomainAuthRefresh,
 )
 from app.domain.entities.auth_entity import Token as DomainToken
-from app.infrastructure.enums.auth_enum import TokenType
+from app.infrastructure.enums import TokenType
 
 
 class AuthService:

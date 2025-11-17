@@ -33,6 +33,9 @@ from app.ai.pipelines import (
     IndexingPipeline
 )
 from app.infrastructure.messaging import RabbitMQClient
+from app.application.validation import DocumentUploadValidator
+from app.infrastructure.enums import DocumentUploadMimeType
+from app.ai.enums import FileExtensionProvider as DocumentUploadExtensionType
 
 
 class Container(containers.DeclarativeContainer):
@@ -149,9 +152,16 @@ class Container(containers.DeclarativeContainer):
         embedder=embeddings,
         vector_store=vector_store,
     )
-    print(settings.provided.get_rabbitmq_url(), flush=True)
+    
     messaging_client = providers.Singleton(
         RabbitMQClient,
         url=settings.provided.get_rabbitmq_url(),
         prefetch_count=settings.provided.RABBITMQ_PREFETCH_COUNT,
+    )
+
+    document_upload_validator = providers.Singleton(
+        DocumentUploadValidator,
+        max_file_size=settings.provided.DOCUMENT_UPLOAD_MAX_SIZE,
+        allowed_extensions=DocumentUploadExtensionType.get_values(),
+        allowed_mime_types=DocumentUploadMimeType.get_values(),
     )

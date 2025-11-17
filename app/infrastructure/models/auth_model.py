@@ -2,7 +2,7 @@ import uuid
 from typing import Any, List
 from sqlalchemy import Column, String, Boolean, UUID, ForeignKey, TIMESTAMP, Text
 from sqlalchemy.sql import func
-from app.infrastructure.enums.auth_enum import TokenType
+from app.infrastructure.enums import TokenType
 from .base import Base, TimestampMixin
 
 
