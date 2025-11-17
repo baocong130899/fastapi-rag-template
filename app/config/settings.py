@@ -1,7 +1,7 @@
 from typing import Optional, List
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import SecretStr, Field, field_validator
-from app.infrastructure.enums.environment_enum import EnvironmentType
+from app.infrastructure.enums import EnvironmentType
 from app.ai.enums import (
     ChunkingProvider, 
     PageModeProvider,
@@ -68,6 +68,9 @@ class Settings(BaseSettings):
     ]
 
     PAGE_MODE: PageModeProvider = PageModeProvider.PAGE.value
+
+    STORAGE_PATH: str = "uploads"
+    DOCUMENT_UPLOAD_MAX_SIZE: int = 10485760 # 10MB
 
     HTTP_CLIENT_TIMEOUT: float = 30
 

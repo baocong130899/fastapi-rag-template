@@ -3,6 +3,7 @@ from app.presentation.api.v1.endpoints import (
     auth_router,
     user_router,
     knowledge_base_router,
+    document_router,
 )
 
 api_router = APIRouter()
@@ -16,3 +17,4 @@ def health():
 api_router.include_router(auth_router.router, prefix="/auth", tags=["Auth"])
 api_router.include_router(user_router.router, prefix="/users", tags=["User"])
 api_router.include_router(knowledge_base_router.router, prefix="/knowledge-base", tags=["Knowledge base"])
+api_router.include_router(document_router.router, prefix="/documents", tags=["Document"])
