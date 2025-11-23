@@ -14,6 +14,6 @@ class DocumentUploadMimeType(Enum):
     def get_values(cls) -> List[str]:
         values = []
         for item in cls:
-            values.append(item.value)
+            values.extend(item.value)
 
         return values

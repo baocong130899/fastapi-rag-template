@@ -1,10 +1,14 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from starlette.middleware import Middleware
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
+from fastapi.middleware.trustedhost import TrustedHostMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from app.bootstrap.container import Container
 from app.presentation.api.v1.endpoints.base_router import api_router
-from app.config.logger_config import configure_logging
+from app.core.logging import configure_logging
+from app.core.settings import Settings
 
 
 @asynccontextmanager
@@ -45,7 +49,7 @@ async def lifespan(app: FastAPI):
 def create_app(container: Container):
 
     # Get settings.
-    settings = container.settings()
+    settings: Settings = container.settings()
 
     # Init logger.
     configure_logging(settings=settings)
@@ -54,17 +58,18 @@ def create_app(container: Container):
     app = FastAPI(
         lifespan=lifespan,
         title=settings.APP_NAME,
+        middleware=[
+            Middleware(ProxyHeadersMiddleware, trusted_hosts=settings.TRUSTED_HOSTS),
+            Middleware(TrustedHostMiddleware, allowed_hosts=settings.ALLOWED_HOSTS),
+            Middleware(
+                CORSMiddleware, 
+                allow_origins=settings.ORIGINS,
+                allow_credentials=True,
+                allow_methods=["*"],
+                allow_headers=["*"],
+            )
+        ]
     )
-
-    # Declare cors.
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=["*"],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
-    logger.info("Initialize cors successfully!.")
 
     # Declare routers.
     app.include_router(api_router, prefix="/api/v1")

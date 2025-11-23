@@ -10,7 +10,7 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy import text
 from sqlalchemy.pool import AsyncAdaptedQueuePool
-from app.config.settings import Settings
+from app.core.settings import Settings
 
 
 class SessionManager:

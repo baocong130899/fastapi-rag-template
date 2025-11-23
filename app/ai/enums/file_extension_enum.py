@@ -17,6 +17,6 @@ class FileExtensionEnum(Enum):
     def get_values(cls) -> List[str]:
         values = []
         for item in cls:
-            values.extend(item.value)
+            values.append(item.value)
 
         return values

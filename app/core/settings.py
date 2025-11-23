@@ -23,8 +23,8 @@ class Settings(BaseSettings):
     LOG_JSON_FORMAT: bool = False
     LOG_MESSAGE_FILE: str = "logs/app.log"
     LOG_ERROR_FILE: str = "logs/error.log"
-    LOG_BACKTRACE: bool = True
-    LOG_DIAGNOSE: bool = False
+    LOG_BACKTRACE: bool = False
+    LOG_DIAGNOSE: bool = True
 
     DATABASE_DEBUG: bool = False
     DATABASE_URL: Optional[str] = None
@@ -157,3 +157,13 @@ class Settings(BaseSettings):
         return (
             f"amqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASS.get_secret_value()}@{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}/{self.RABBITMQ_VHOST}"
         )
+
+    NETWORK_SUBNET: str
+    REVERSE_PROXY_PORT: int
+    REVERSE_PROXY_IP: str
+    APP_DOCKER_IP: str
+    PGVECTOR_DOCKER_IP: str
+    RABBITMQ_DOCKER_IP: str
+    TRUSTED_HOSTS: List[str]
+    ALLOWED_HOSTS: List[str]
+    ORIGINS: List[str] = ["*"]

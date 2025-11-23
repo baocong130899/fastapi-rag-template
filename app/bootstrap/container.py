@@ -1,6 +1,6 @@
 from httpx import AsyncClient, Client, Limits
 from dependency_injector import containers, providers
-from app.config.settings import Settings
+from app.core.settings import Settings
 from app.infrastructure.database import SessionManager
 from app.infrastructure.repository_impl.user_repository_impl import (
     SQLAlchemyUserRepository,
@@ -36,6 +36,7 @@ from app.infrastructure.messaging import RabbitMQClient
 from app.application.validation import DocumentUploadValidator
 from app.infrastructure.enums import DocumentUploadMimeType
 from app.ai.enums import FileExtensionProvider as DocumentUploadExtensionType
+from app.infrastructure.helpers import TempFileHelper
 
 
 class Container(containers.DeclarativeContainer):
@@ -165,3 +166,5 @@ class Container(containers.DeclarativeContainer):
         allowed_extensions=DocumentUploadExtensionType.get_values(),
         allowed_mime_types=DocumentUploadMimeType.get_values(),
     )
+
+    temp_file_helper = providers.Singleton(TempFileHelper)
