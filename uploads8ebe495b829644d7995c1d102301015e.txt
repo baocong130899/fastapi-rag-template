@@ -1,0 +1,86 @@
+users
++ id
++ full_name
++ user_name
++ password
++ created_at
++ updated_at
+
+
+knowledge_base
++ id
++ type #basic, folder
++ document_ids
++ created_at
++ updated_at
+
+
+documents
++ id
++ file_name
++ file_size
++ file_hash
++ created_at
++ updated_at
+
+
+document_status
++ id
++ document_id
++ status
++ error
++ created_at
++ updated_at
+
+
+chat
++ id
++ user_id 
++ knowledge_base_id
++ title  
++ created_at
++ updated_at
+
+
+chat_message
++ id 
++ chat_id
++ sender  # system, user, ai
++ message
++ created_at
+
+
+embeddings
++ id
++ document_id
++ vector
++ created_at
++ updated_at
+
+
+- Mỗi người dùng đăng nhập sẽ có document, knowledge_base và chat riêng.
+- Bảng knowledge_base có 2 loại: 1 là dạng folder và 2 là dạng basic. 
+ + Dạng basic được sử dụng khi người dùng chọn danh sách document riêng lẻ để chat.
+ + Dạng folder là folder sẽ chứa danh sách các document.
+- Bảng document_status dùng để kiểm tra trạng thái upload của document cho quá trình embeddings.
+
+Hãy điền vào 2 bảng còn thiếu hoặc thiết kế sao cho đúng nhất.
+
+
+
+# class Embeddings(Base, TimestampMixin):
+#     __tablename__ = "embeddings"
+
+#     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+#     document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id", ondelete="CASCADE"))
+#     vector: Vector = Column(Vector)
+#     content = Column(Text)
+#     cmetadata = Column("metadata", JSON)
+
+
+
+uv sync --link-mode=copy uvicorn app.main:app --reload
+
+alembic init -t async migration alembic revision --autogenerate -m "init_ table" alembic upgrade head
+
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned ..venv\Scripts\Activate.ps1

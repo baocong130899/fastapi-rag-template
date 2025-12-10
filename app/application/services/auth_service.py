@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.domain.respositories.user_repository import UserRepository
 from app.domain.respositories.token_repository import TokenRepository
 from app.application.services.jwt_service import JwtService
-from app.application.services.hasher_service import HasherService
+from app.infrastructure.helpers import HasherHelper
 from app.domain.entities.user_entity import User as DomainUser
 from app.domain.entities.auth_entity import (
     Auth as DomainAuth,
@@ -21,7 +21,7 @@ class AuthService:
         user_repo: UserRepository,
         token_repo: TokenRepository,
         jwt_svc: JwtService,
-        hasher_svc: HasherService,
+        hasher_svc: HasherHelper,
         session_factory: AsyncIterator[AsyncSession],
     ):
         self.user_repo = user_repo

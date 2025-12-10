@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from uuid import UUID
 from datetime import datetime
 from typing import Optional
-from app.application.services.hasher_service import HasherService
+from app.infrastructure.helpers import HasherHelper
 
 
 @dataclass
@@ -18,7 +18,7 @@ class User:
     @classmethod
     def create(
         cls,
-        hasher_svc: HasherService,
+        hasher_svc: HasherHelper,
         email: str,
         name: str,
         is_active: bool,

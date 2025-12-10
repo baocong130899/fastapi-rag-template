@@ -74,3 +74,26 @@ class SQLAlchemyUserRepository(UserRepository):
 
     async def update(self, user: DomainUser, session: AsyncSession) -> DomainUser:
         """"""
+        result = await session.execute(select(UserModel).where(UserModel.id == user.id))
+        model = result.scalar_one_or_none()
+        if not model:
+            raise Exception("User not found")
+
+        model.email = user.email
+        model.name = user.name
+        model.is_active = user.is_active
+        model.hashed_password = user.hashed_password
+
+        session.add(model)
+        await session.commit()
+        await session.refresh(model)
+
+        return DomainUser(
+            id=str(model.id),
+            email=model.email,
+            name=model.name,
+            is_active=model.is_active,
+            hashed_password=model.hashed_password,
+            created_at=model.created_at,
+            updated_at=model.updated_at,
+        )

@@ -13,12 +13,13 @@ class KnowledgeBase(Base, TimestampMixin):
     document_ids = Column(ARRAY(UUID(as_uuid=True)))
 
 
-class Document(Base, TimestampMixin):
+class DocumentModel(Base, TimestampMixin):
     __tablename__ = "documents"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"))
     file_name = Column(String(255), nullable=False)
+    content_type = Column(String(100), nullable=False)
     file_size = Column(BigInteger)
     file_hash = Column(String(255))
 

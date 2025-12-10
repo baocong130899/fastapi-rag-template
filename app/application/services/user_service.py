@@ -3,7 +3,7 @@ from typing import AsyncIterator
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.domain.respositories.user_repository import UserRepository
 from app.domain.entities.user_entity import User as DomainUser
-from app.application.services.hasher_service import HasherService
+from app.infrastructure.helpers import HasherHelper
 
 
 class UserService:
@@ -11,7 +11,7 @@ class UserService:
     def __init__(
         self,
         user_repo: UserRepository,
-        hasher_svc: HasherService,
+        hasher_svc: HasherHelper,
         session_factory: AsyncIterator[AsyncSession],
     ):
         self.user_repo = user_repo

@@ -4,6 +4,7 @@ from pathlib import Path
 from fastapi import UploadFile
 import aiofiles
 import blake3
+from app.presentation.schemas.temp_file_schemas import TempFile
 
 
 class TempFileHelper:
@@ -13,7 +14,7 @@ class TempFileHelper:
         self.storage_path = Path(storage_path)
         self.storage_path.mkdir(parents=True, exist_ok=True)
 
-    async def save_temp(self, file: UploadFile):
+    async def save_temp(self, file: UploadFile) -> TempFile:
         """
         Temporarily save uploaded file + calculate hash in the same write cycle. 
         Return metadata: save name, size (if any), path, hash.
@@ -37,12 +38,13 @@ class TempFileHelper:
             hexdigest = hasher.hexdigest()
             await file.close()
 
-            return {
-                "file_name": unique_name,
-                "file_size": file.size,
-                "dest_path": str(dest_path),
-                "hexdigest": hexdigest,
-            }
+            return TempFile(
+                file_name=unique_name,
+                file_size=file.size,
+                content_type=file.content_type,
+                dest_path=str(dest_path),
+                hexdigest=hexdigest,
+            )
 
         except Exception as exc:
             try:

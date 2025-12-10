@@ -42,6 +42,7 @@ def upgrade() -> None:
     sa.Column('file_name', sa.String(length=255), nullable=False),
     sa.Column('file_size', sa.BigInteger(), nullable=True),
     sa.Column('file_hash', sa.String(length=255), nullable=True),
+    sa.Column('content_type', sa.String(length=100), nullable=False),
     sa.Column('created_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=True),
     sa.Column('updated_at', sa.TIMESTAMP(), server_default=sa.text('now()'), nullable=True),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),

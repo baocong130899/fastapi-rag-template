@@ -2,16 +2,21 @@ from httpx import AsyncClient, Client, Limits
 from dependency_injector import containers, providers
 from app.core.settings import Settings
 from app.infrastructure.database import SessionManager
-from app.infrastructure.repository_impl.user_repository_impl import (
+from app.infrastructure.repository_impl import (
     SQLAlchemyUserRepository,
-)
-from app.infrastructure.repository_impl.token_impl import (
     SqlAlchemyTokenRepository,
+    SQLAlchemyDocumentRepository,
 )
-from app.application.services.user_service import UserService
-from app.application.services.auth_service import AuthService
-from app.application.services.jwt_service import JwtService
-from app.application.services.hasher_service import HasherService
+from app.application.services import (
+    UserService,
+    AuthService,
+    JwtService,
+    DocumentUploadService,
+)
+from app.infrastructure.helpers import (
+    HasherHelper, 
+    TempFileHelper,
+)
 from app.ai.adapters.chunking import RecursiveCharacterAdapter
 from app.ai.adapters.document_loading import (
     TextAdapter,
@@ -36,7 +41,6 @@ from app.infrastructure.messaging import RabbitMQClient
 from app.application.validation import DocumentUploadValidator
 from app.infrastructure.enums import DocumentUploadMimeType
 from app.ai.enums import FileExtensionProvider as DocumentUploadExtensionType
-from app.infrastructure.helpers import TempFileHelper
 
 
 class Container(containers.DeclarativeContainer):
@@ -51,6 +55,7 @@ class Container(containers.DeclarativeContainer):
     session_manager = providers.Singleton(SessionManager, settings=settings)
     user_repository = providers.Factory(SQLAlchemyUserRepository)
     token_repository = providers.Factory(SqlAlchemyTokenRepository)
+    document_repository = providers.Factory(SQLAlchemyDocumentRepository)
 
     async_client = providers.Singleton(
         AsyncClient,
@@ -62,8 +67,14 @@ class Container(containers.DeclarativeContainer):
         timeout=settings.provided.HTTP_CLIENT_TIMEOUT, 
         limits=Limits(max_connections=100, max_keepalive_connections=20)
     )
+    
+    messaging_client = providers.Singleton(
+        RabbitMQClient,
+        url=settings.provided.get_rabbitmq_url(),
+        prefetch_count=settings.provided.RABBITMQ_PREFETCH_COUNT,
+    )
 
-    hasher_service = providers.Singleton(HasherService)
+    hasher_service = providers.Singleton(HasherHelper)
     jwt_service = providers.Factory(
         JwtService,
         secret=settings.provided.JWT_SECRET,
@@ -83,6 +94,12 @@ class Container(containers.DeclarativeContainer):
         token_repo=token_repository,
         jwt_svc=jwt_service,
         hasher_svc=hasher_service,
+        session_factory=session_manager.provided.async_generator,
+    )
+    document_upload_service = providers.Factory(
+        DocumentUploadService,
+        messaging_client=messaging_client,
+        document_repo=document_repository,
         session_factory=session_manager.provided.async_generator,
     )
 
@@ -152,12 +169,6 @@ class Container(containers.DeclarativeContainer):
         text_splitter=text_splitter,
         embedder=embeddings,
         vector_store=vector_store,
-    )
-    
-    messaging_client = providers.Singleton(
-        RabbitMQClient,
-        url=settings.provided.get_rabbitmq_url(),
-        prefetch_count=settings.provided.RABBITMQ_PREFETCH_COUNT,
     )
 
     document_upload_validator = providers.Singleton(
